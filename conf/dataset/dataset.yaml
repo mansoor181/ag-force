@@ -1,0 +1,10 @@
+# Dataset configuration
+
+# Split type: epitope_group | antigen_fold | temporal | random
+split: epitope_group
+
+# CDR type: 1 (H1) | 2 (H2) | 3 (H3)
+cdr_type: "3"
+
+# ESM-2 embeddings directory
+esm_embeddings_dir: ./data/processed/esm_embeddings

@@ -1,0 +1,18 @@
+# HierAb (v32): Hierarchical Antibody Design
+# Main Hydra configuration
+
+defaults:
+  - _self_
+  - model: model
+  - training: training
+  - dataset: dataset
+  - callbacks: callbacks
+  - wandb: wandb
+
+# Data paths (update these to match your environment)
+data_root: ./data
+results_dir: ./results
+features_path: ./data/processed/rich_features_v2.pt
+
+# CDR numbering scheme (IMGT)
+numbering_scheme: imgt

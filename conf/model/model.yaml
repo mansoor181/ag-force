@@ -1,0 +1,87 @@
+# AntigenForce Model Configuration
+# Best hyperparameters from sweep optimization
+# RMSD=1.59, iRMSD=1.29, fnat=0.68, DockQ=0.74
+
+# Architecture (from sweep)
+embed_size: 128
+hidden_size: 256
+n_layers: 5
+dropout: 0.1
+num_attn_heads: 4
+n_virtual_nodes: 3
+
+# Loss weights (from hyperparameter sweep)
+alpha: 1.301            # coordinate loss
+beta: 0.461             # contrastive pairing loss
+gamma: 0.581            # docking proximity loss
+delta: 0.664            # shadow paratope loss
+epsilon: 0.119          # GDPP diversity loss
+eta: 0.167              # auxiliary CDR feature reconstruction
+zeta: 0.674             # latent coupling
+dock_cutoff: 8.0        # CA distance cutoff (angstroms)
+
+# v32: Attention mode + Antigen classification
+# NOTE: Original sweep used pre-v32 defaults (gated attention, no cls loss)
+use_direct_attn: false
+lambda_antigen_cls: 0.0
+
+# Information-theoretic losses (from sweep - ENABLED)
+lambda_infonce: 0.456
+lambda_mine: 0.099
+lambda_pairwise: 0.298
+infonce_temp: 0.119
+latent_dim: 64
+
+# Framework dropout
+p_fw_dropout: 0.300
+
+# Feature modes
+node_feats_mode: "1111"
+edge_feats_mode: "1111"
+interface_only: 1
+mode: "111"
+
+# ESM-2 embeddings (DISABLED for code_v1 to match sweep)
+use_esm: false
+esm_dim: 1280
+esm_model: esm2_t33_650M_UR50D
+
+# Architectural choices
+use_learned_queries: true
+init_gate_bias: 0.0
+init_bypass_alpha: 0.5
+
+# Pairwise message passing (Potts-like J_ij couplings)
+# When use_mdn=true AND use_pairwise=true: uses MDNPairwiseHead
+# Each of K components has its own J matrix for local AA constraints
+use_pairwise: true     # ENABLED for MDN+Pairwise
+use_iterative: false
+n_refine_passes: 2
+n_message_passes: 2    # message passing rounds per forward
+pairwise_coupling_mode: adjacent
+gumbel_tau: 0.641
+use_improved_mine: true
+mine_type: infonce
+mine_n_negatives: 4
+
+# MDN (Mixture Density Network) - addresses mode collapse
+use_mdn: true
+mdn_k: 4               # number of mixture components
+
+# aMCL (Annealed Multiple Choice Learning, NeurIPS 2024)
+# K hypotheses with soft Boltzmann assignment annealing to hard WTA.
+# IMPORTANT: anneal_epochs should be < early_stop patience * typical convergence
+use_amcl: true         # ENABLED with faster annealing
+amcl_tau_start: 2.0    # start lower for faster specialization
+amcl_tau_end: 0.1      # don't go too low (avoid mode collapse)
+amcl_anneal_epochs: 20 # faster annealing (was 40, too slow)
+
+# Disabled features
+use_kan_seq_head: false
+kan_grid_size: 5
+kan_spline_order: 3
+use_hyperbolic: false
+hyperbolic_curvature: 1.0
+use_topo_features: false
+topo_dim: 64
+lambda_topo: 0.1

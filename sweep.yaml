@@ -1,0 +1,132 @@
+# AntigenForce (P4) Sweep Configuration v4
+# Focused on iterative refinement + pairwise coupling (best: train7 CAAR 0.204)
+#
+# Usage:
+#   bash launch_sweep.sh --gpus 0,1 --count 20
+
+program: run_sweep.py
+method: bayes
+metric:
+  name: val_caar
+  goal: maximize
+
+parameters:
+  # --- Core hyperparameters ---
+  lr:
+    distribution: log_uniform_values
+    min: 5.0e-5
+    max: 3.0e-3
+
+  batch_size:
+    values: [4, 8, 16]
+
+  dropout:
+    values: [0.0, 0.1, 0.2]
+
+  anneal_base:
+    distribution: uniform
+    min: 0.88
+    max: 0.96
+
+  weight_decay:
+    distribution: log_uniform_values
+    min: 0.001
+    max: 0.05
+
+  # --- Loss weights ---
+  alpha:
+    distribution: log_uniform_values
+    min: 0.3
+    max: 2.0
+
+  beta:
+    distribution: log_uniform_values
+    min: 0.2
+    max: 1.5
+
+  gamma:
+    distribution: log_uniform_values
+    min: 0.2
+    max: 1.5
+
+  delta:
+    distribution: log_uniform_values
+    min: 0.1
+    max: 0.8
+
+  epsilon:
+    distribution: log_uniform_values
+    min: 0.02
+    max: 0.15
+
+  # --- GNN architecture ---
+  n_layers:
+    values: [3, 4, 5]
+
+  num_attn_heads:
+    values: [4, 8]
+
+  # --- AntigenForce core ---
+  lambda_infonce:
+    distribution: log_uniform_values
+    min: 0.2
+    max: 1.2
+
+  infonce_temp:
+    distribution: log_uniform_values
+    min: 0.05
+    max: 0.3
+
+  p_fw_dropout:
+    distribution: uniform
+    min: 0.15
+    max: 0.45
+
+  zeta:
+    distribution: log_uniform_values
+    min: 0.2
+    max: 1.0
+
+  latent_dim:
+    values: [48, 64, 96]
+
+  eta:
+    distribution: log_uniform_values
+    min: 0.1
+    max: 0.6
+
+  # --- v4: Iterative Refinement (BEST: +17% CAAR) ---
+  use_iterative:
+    values: [true]  # Always on - proven effective
+
+  n_refine_passes:
+    values: [2, 3, 4, 5]
+
+  gumbel_tau:
+    distribution: uniform
+    min: 0.5
+    max: 1.5
+
+  # --- v4: Pairwise Coupling (exploratory) ---
+  use_pairwise:
+    values: [false, true]
+
+  n_message_passes:
+    values: [1, 2, 3]
+
+  lambda_pairwise:
+    distribution: log_uniform_values
+    min: 0.05
+    max: 0.3
+
+  # --- v4: Improved MINE ---
+  use_improved_mine:
+    values: [true]  # Always use improved (InfoNCE stable)
+
+  mine_type:
+    values: ["infonce"]  # Most stable
+
+  lambda_mine:
+    distribution: log_uniform_values
+    min: 0.05
+    max: 0.25

@@ -1,0 +1,18 @@
+# Training configuration
+
+seed: 42
+gpu: 0
+max_epoch: 50
+batch_size: 8
+lr: 1e-3
+weight_decay: 0.01
+anneal_base: 0.97       # v32: slower decay
+grad_clip: 0.5
+num_workers: 4
+
+# Run name (auto-generated if empty)
+run_name: ""
+
+# Test-only mode (skip training, run inference with checkpoint)
+test_only: false
+checkpoint: null
